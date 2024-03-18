@@ -131,10 +131,18 @@ function makeImmutable(obj) {
  *    makeWord({ a: [0, 1], b: [2, 3], c: [4, 5] }) => 'aabbcc'
  *    makeWord({ H:[0], e: [1], l: [2, 3, 8], o: [4, 6], W:[5], r:[7], d:[9]}) => 'HelloWorld'
  */
-function makeWord(/* lettersObject */) {
-  throw new Error('Not implemented');
-}
+function makeWord(lettersObject) {
+  const wordLength = Object.values(lettersObject).flat().length;
+  const array = new Array(wordLength);
+  const lettersArray = Object.entries(lettersObject);
+  lettersArray.forEach(([letter, indexes]) => {
+    indexes.forEach((index) => {
+      array[index] = letter;
+    });
+  });
 
+  return array.join('');
+}
 /**
  * There is a queue for tickets to a popular movie.
  * The ticket seller sells one ticket at a time strictly in order and give the change.
@@ -149,8 +157,38 @@ function makeWord(/* lettersObject */) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  const seller = {
+    money25: 0,
+    money50: 0,
+    money100: 0,
+  };
+  let result = true;
+  queue.forEach((payment) => {
+    if (payment === 25) {
+      seller.money25 += 1;
+    } else if (payment === 50) {
+      if (seller.money25 > 0) {
+        seller.money25 -= 1;
+        seller.money50 += 1;
+      } else {
+        result = false;
+      }
+    } else if (payment === 100) {
+      if (seller.money50 > 0 && seller.money25 > 0) {
+        seller.money50 -= 1;
+        seller.money25 -= 1;
+      } else if (seller.money25 >= 3) {
+        seller.money25 -= 3;
+      } else {
+        result = false;
+      }
+    } else {
+      result = false;
+    }
+  });
+
+  return result;
 }
 
 /**
@@ -166,8 +204,10 @@ function sellTickets(/* queue */) {
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.getArea = () => this.width * this.height;
 }
 
 /**
@@ -180,8 +220,8 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
 
 /**
@@ -195,8 +235,10 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const obj = JSON.parse(json);
+  Object.setPrototypeOf(obj, proto);
+  return obj;
 }
 
 /**
@@ -225,8 +267,13 @@ function fromJSON(/* proto, json */) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  return arr.sort((a, b) => {
+    if (a.country !== b.country) {
+      return a.country.localeCompare(b.country);
+    }
+    return a.city.localeCompare(b.city);
+  });
 }
 
 /**
@@ -259,8 +306,20 @@ function sortCitiesArray(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const map = new Map();
+  array.forEach((obj) => {
+    const value = valueSelector(obj);
+    const key = keySelector(obj);
+
+    if (map.has(key)) {
+      map.get(key).push(value);
+    } else {
+      map.set(key, [value]);
+    }
+  });
+
+  return map;
 }
 
 /**
